@@ -10,30 +10,6 @@ sem_t bridge;
 //number of cars of the bridge 
 int cars = 0;
 
-void* VehicleAction(void* arg) {
-	
-	vehicle_info *ti = (vehicle_info *) arg;
-	ArriveBridge(ti);
-	CrossBridge(ti);
-	ExitBridge(ti);
-
-}
-
-void* ArriveBridge(void* arg){
-
-
-
-}
-void* CrossBridge(void* arg){
-
-	//Print out vehicle information
-	
-}
-void* ExitBridge(void* arg){
-
-
-	
-}
 typedef struct _vehicle_info {
 	int id; // id
 	int dir; // heading direction
@@ -54,6 +30,35 @@ typedef struct __myret_t {
 	int x;
 	int y;
 } myret_t;
+
+
+void* ArriveBridge(void* arg){
+
+
+
+}
+void* CrossBridge(void* arg){
+
+	//Print out vehicle information
+	
+}
+void* ExitBridge(void* arg){
+
+
+	
+}
+
+void* VehicleAction(void* arg) {
+	
+	vehicle_info *ti = (vehicle_info *) arg;
+	ArriveBridge(ti);
+	CrossBridge(ti);
+	ExitBridge(ti);
+
+}
+
+
+
 
 void *mythread(void *arg) { 
 	myarg_t *m = (myarg_t *) arg; 
