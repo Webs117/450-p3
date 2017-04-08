@@ -1,4 +1,5 @@
 
+#define _BSD_SOURCE
 #include <sys/time.h>
 #include <stdio.h>
 #include <pthread.h>
@@ -76,9 +77,14 @@ void* ArriveBridge(void* carArgs){
 			if(direction == copyCurrentCar->dir){
 				carsOnBridge++;
 			}else{
+				sem_post(&bridgeLock);
+				sem_post(&dirLock);
 				sem_wait(&empty);
+				sem_wait(&bridgeLock);
 				carsOnBridge++;
+				sem_wait(&dirLock);
 				direction == copyCurrentCar->dir;
+
 			}
 			sem_post(&dirLock);
 		}
@@ -170,6 +176,7 @@ int main(int argc, char *argv[]) {
     //1 - North
 	//2 - South 
     cars[0].dir = 1;
+    cars[0].inter_arrival_t = 0.0;
     cars[1].dir = 1;
     cars[2].dir = 2;
     cars[3].dir = 2;
