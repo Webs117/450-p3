@@ -1,3 +1,4 @@
+#define _BSD_SOURCE
 #include <sys/time.h>
 #include <stdio.h>
 #include <pthread.h>
@@ -11,7 +12,7 @@ sem_t bridge;
 //number of cars of the bridge 
 int cars = 0;
 
-
+double startTime;
 
 double GetTime() {
     struct timeval t;
@@ -46,28 +47,43 @@ vehicle_info *copyCurrentCar = (vehicle_info *) carArgs;
 
 
 }
-void* CrossBridge(void* arg){
+void* CrossBridge(void* carArgs){
 
-	//Print out vehicle information
+
+	char pdir;
+
 	vehicle_info *copyCurrentCar = (vehicle_info *) carArgs;
 
 	//see if bridge is full
 	sem_wait(&bridge);
 
+	if(copyCurrentCar->dir == 1){
+		pdir = 'N';
+	}else{
+		pdir = 'S';
+	}
+
+
+	printf("Time: %2.1f: Vehicle  %d  (%c) crossing \n", GetTime()-startTime, copyCurrentCar->id, pdir);
+
 	//takes 5 seconds to cross
 	Spin(5);
-	
-}
-void* ExitBridge(void* arg){
-
-
 
 	
 }
-					//generic pointer 
+void* ExitBridge(void* carArgs){
+
+	vehicle_info *copyCurrentCar = (vehicle_info *) carArgs;
+
+	//give back resource (spot on bridge)
+	sem_post(&bridge);
+
+	
+}
+					//generic pointer argument type
 void* VehicleAction(void* carArgs) {
 	
-									//define generic pointer 
+									//define generic pointer argument type 
 	vehicle_info *copyCurrentCar = (vehicle_info *) carArgs;
 
 	printf("In vehicleAction, ID: %d, Dir: %d\n", copyCurrentCar->id, copyCurrentCar->dir);
@@ -97,7 +113,7 @@ int main(int argc, char *argv[]) {
 	for (int i=0; i<numCars; i++){
         cars[i].id = i;
         cars[i].dir = 0;
-        cars[i].inter_arrival_t = 0.1;
+        cars[i].inter_arrival_t = 1.0;
     }
 
     //set car directions 
@@ -114,6 +130,9 @@ int main(int argc, char *argv[]) {
     cars[10].dir = 1;
     cars[11].dir = 1;
     cars[12].dir = 1;
+
+    
+    startTime = GetTime();
 
     for (int k=0; k<numCars; k++){
         usleep((int)(cars[k].inter_arrival_t*1000000));

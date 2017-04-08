@@ -1,7 +1,13 @@
+
+#define _BSD_SOURCE
 #include <sys/time.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <assert.h>
+#include <stdlib.h>
 #include <semaphore.h>
+#include <unistd.h>
+
 
 sem_t lock_reader;  // lock for reader
 sem_t lock_writer;  // lock for writer
