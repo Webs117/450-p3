@@ -9,6 +9,9 @@
 
 sem_t bridge;
 
+//which algorithm to run
+int greedy = 1;
+
 //number of cars of the bridge 
 int cars = 0;
 
@@ -41,9 +44,13 @@ typedef struct _vehicle_info {
 
 void* ArriveBridge(void* carArgs){
 
-vehicle_info *copyCurrentCar = (vehicle_info *) carArgs;
+	vehicle_info *copyCurrentCar = (vehicle_info *) carArgs;
 
-
+	if(greedy == 1){
+		//Run Greedy Crossing
+	}else{
+		//FCFS Crossing
+	}
 
 
 }
@@ -86,7 +93,7 @@ void* VehicleAction(void* carArgs) {
 									//define generic pointer argument type 
 	vehicle_info *copyCurrentCar = (vehicle_info *) carArgs;
 
-	printf("In vehicleAction, ID: %d, Dir: %d\n", copyCurrentCar->id, copyCurrentCar->dir);
+	//printf("In vehicleAction, ID: %d, Dir: %d\n", copyCurrentCar->id, copyCurrentCar->dir);
 	ArriveBridge(copyCurrentCar);
 	CrossBridge(copyCurrentCar);
 	ExitBridge(copyCurrentCar);
@@ -117,6 +124,8 @@ int main(int argc, char *argv[]) {
     }
 
     //set car directions 
+    //1 - North
+	//2 - South 
     cars[0].dir = 1;
     cars[1].dir = 1;
     cars[2].dir = 2;
