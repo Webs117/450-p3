@@ -1,4 +1,4 @@
-#define _BSD_SOURCE
+
 #include <sys/time.h>
 #include <stdio.h>
 #include <pthread.h>
@@ -8,12 +8,17 @@
 #include <unistd.h>
 
 sem_t bridge;
+sem_t dirLock;
+sem_t bridgeLock;
+sem_t empty;
 
 //which algorithm to run
 int greedy = 1;
 
+int direction = 1;
+
 //number of cars of the bridge 
-int cars = 0;
+int carsOnBridge = 0;
 
 double startTime;
 
@@ -48,6 +53,38 @@ void* ArriveBridge(void* carArgs){
 
 	if(greedy == 1){
 		//Run Greedy Crossing
+
+		//if bridge is empty set direction then go
+
+		//if bridge is not empty
+			// if same direction go
+			// if oppostive direction wait
+
+
+
+
+		sem_wait(&bridgeLock);
+		if(carsOnBridge == 0){
+			sem_wait(&dirLock);
+			direction = copyCurrentCar->dir;
+			carsOnBridge++;
+			sem_wait(&empty);
+			//sem_wait(&bridge);
+			sem_post(&dirLock);
+		}else{
+			sem_wait(&dirLock);
+			if(direction == copyCurrentCar->dir){
+				carsOnBridge++;
+			}else{
+				sem_wait(&empty);
+				carsOnBridge++;
+				direction == copyCurrentCar->dir;
+			}
+			sem_post(&dirLock);
+		}
+		sem_post(&bridgeLock);
+
+
 	}else{
 		//FCFS Crossing
 	}
@@ -60,9 +97,6 @@ void* CrossBridge(void* carArgs){
 	char pdir;
 
 	vehicle_info *copyCurrentCar = (vehicle_info *) carArgs;
-
-	//see if bridge is full
-	sem_wait(&bridge);
 
 	if(copyCurrentCar->dir == 1){
 		pdir = 'N';
@@ -83,8 +117,15 @@ void* ExitBridge(void* carArgs){
 	vehicle_info *copyCurrentCar = (vehicle_info *) carArgs;
 
 	//give back resource (spot on bridge)
-	sem_post(&bridge);
 
+	sem_wait(&bridgeLock);
+	carsOnBridge--;
+
+	if(carsOnBridge == 0){
+		sem_post(&empty);
+	}
+	//sem_post(&bridge);
+	sem_post(&bridgeLock);
 	
 }
 					//generic pointer argument type
@@ -107,7 +148,9 @@ int main(int argc, char *argv[]) {
  
 
 	sem_init(&bridge, 1,3);
-
+	sem_init(&dirLock, 0, 1);
+	sem_init(&bridgeLock, 0, 1);
+	sem_init(&empty, 0, 1);
 
 	int numCars = 13;
 
