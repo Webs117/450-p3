@@ -157,6 +157,8 @@ void* ArriveBridge(void* carArgs){
 			//idea 
 			// if 
 
+			printf("Arriving to nonempty Bridge (cars == 0), ID: %d, Dir: %d\n", copyCurrentCar->id, copyCurrentCar->dir);
+
 			sem_wait(&dirLock);
 			if(copyCurrentCar->dir != direction){
 				//cars on bridge are going in different direction
@@ -408,6 +410,9 @@ void* ExitBridge(void* carArgs){
 
 				sem_wait(&switchDir);
 				if(waiting > 1){
+
+					sem_post(&switchDir);
+
 					printf("I see some cars waiting\n");
 					//need to swap directions to give waiting cars a chance
 					if(copyCurrentCar->dir = 1){
@@ -418,13 +423,14 @@ void* ExitBridge(void* carArgs){
 							sem_post(&southWait);
 						}
 					}else{
-						for(int i = 0; i < waitingSouth;i++){
-							printf("initialize south\n");
-							sem_post(&southWait);
+						//current direction is south so switch direction to north
+						for(int i = 0; i < waitingNorth;i++){
+							printf("initialize north\n");
+							sem_post(&northWait);
 						}
 					}
 				}
-				sem_post(&switchDir);
+				
 
 
     			//bridge is now open 
